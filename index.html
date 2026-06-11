@@ -1,24 +1,276 @@
-### Github 정적 웹서비스를 위한 최신 디자인 트렌드가 적용된 반응형(Responsive) 웹 블로그 홈페이지 코드 만들기
-- 전체 구성은 Fully Styled Website로 생성하세요.
-- 홈, 기술, 디자인, 소개에 맞는 화면을 만들고, 각 버튼을 누르면 해당 화면으로 이동합니다.
-- 첨부된 item.csv 파일 내용대로 세부 화면을 구성합니다.
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>sihoon's Personal Blog</title>
+    <style>
+        /* 기본 테마 변수 설정 (라이트 모드) */
+        :root {
+            --bg-color: #f8f9fa;
+            --container-bg: #ffffff;
+            --text-color: #212529;
+            --text-muted: #6c757d;
+            --accent-color: #4a90e2;
+            --border-color: #dee2e6;
+            --card-bg: #f1f3f5;
+        }
 
-### 기술 스택 및 파일 구성:
-- index.html (HTML5): 웹 페이지의 구조와 콘텐츠를 정의합니다.
-- style.css (CSS3): 모든 화면 크기에 대응하는 반응형 웹 디자인을 구현하며, 미니멀하고 깔끔한 최신 웹 디자인을 반영합니다.
-- script.js (JavaScript): **DOM 조작(Manipulation)**을 통한 기본적인 UI 상호작용(예: 모바일 메뉴 토글, 다크 모드 스위치)을 구현합니다.
+        /* 다크(블랙) 모드 변수 설정 */
+        [data-theme="dark"] {
+            --bg-color: #121212;
+            --container-bg: #1e1e1e;
+            --text-color: #e0e0e0;
+            --text-muted: #a0a0a0;
+            --accent-color: #375a7f;
+            --border-color: #333333;
+            --card-bg: #2d2d2d;
+        }
 
-### 주요 구성 요소 및 포함 사항:
-- 헤더: 로고(사이트 제목), GNB(Global Navigation Bar) 포함.
-- 메인 섹션: 최신 포스트 1개 (Featured Post)를 강조하고, 테스트 이미지용 플레이스홀더(Placeholder) (예: <img src="https://via.placeholder.com/600x400?text=Featured+Image">)를 사용합니다.
-- 포스트 그리드: 3열 구조의 최근 포스트 목록 6개를 배치하고, 각 포스트 카드에는 title, content, date, 테스트 이미지를 포함합니다.
-- 푸터: 저작권 정보, 소셜 미디어 링크, 간단한 내비게이션을 포함합니다.
-- 반응형 설계: CSS에서 **미디어 쿼리(Media Queries)**를 사용하여 데스크톱, 태블릿, 모바일 화면에서 모두 최적화된 레이아웃을 제공해야 합니다.
-- 배포 환경: 코드는 별도의 빌드 과정 없이 Github Pages에서 즉시 호스팅될 수 있는 순수 정적 파일로 구성되어야 합니다.
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            transition: background-color 0.3s, color 0.3s;
+        }
 
-### 산출물:
-- SPA(Single Page Application) 형태로 출력하세요. 코드 주석을 사용하여 주요 섹션과 반응형 디자인의 **브레이크포인트(Breakpoints)**를 명확히 표시해 주세요.
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            padding: 20px;
+        }
 
-### 참고사항:
-- 이 블로그의 사용자는 ‘Dong Gue’ 입니다. github 사이트는 'https://github.com/mskdia' 이고, Email 주소는 'mskdia@gmail.com' 입니다.
-- Dong Gue 이미지는 image/portfolio.jpg 를 사용합니다. 
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: var(--container-bg);
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        /* 헤더 & 테마 토글 버튼 */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+
+        .theme-toggle-btn {
+            background-color: var(--text-color);
+            color: var(--container-bg);
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        /* 섹션 공통 */
+        section {
+            margin-bottom: 40px;
+        }
+
+        h2 {
+            margin-bottom: 15px;
+            color: var(--text-color);
+            border-left: 4px solid var(--accent-color);
+            padding-left: 10px;
+        }
+
+        /* 프로필 섹션 */
+        .profile-desc {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+        }
+
+        /* 프로젝트 & 포트폴리오 섹션 */
+        .project-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        @media (max-width: 600px) {
+            .project-grid { grid-template-columns: 1fr; }
+        }
+
+        .project-card {
+            background-color: var(--card-bg);
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        .project-card h3 {
+            margin-bottom: 8px;
+        }
+
+        /* 할 일 리스트 섹션 */
+        .todo-input-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            background-color: var(--container-bg);
+            color: var(--text-color);
+        }
+
+        .add-btn {
+            padding: 10px 20px;
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .todo-list {
+            list-style: none;
+        }
+
+        .todo-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            background-color: var(--card-bg);
+            border-radius: 6px;
+            margin-bottom: 8px;
+        }
+
+        .todo-item.completed span {
+            text-decoration: line-through;
+            color: var(--text-muted);
+        }
+
+        .todo-buttons button {
+            background: none;
+            border: none;
+            margin-left: 10px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+        
+        .complete-btn { color: #28a745; }
+        .delete-btn { color: #dc3545; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>sihoon's Space</h1>
+        <button class="theme-toggle-btn" id="themeToggle">블랙 모드 보기</button>
+    </header>
+
+    <section id="profile">
+        <h2>Profile</h2>
+        <p class="profile-desc">안녕하세요, <strong>sihoon</strong>의 개인 블로그입니다. 이곳은 저의 현재 진행 중인 프로젝트를 기록하고, 매일의 할 일을 관리하는 공간입니다.</p>
+    </section>
+
+    <section id="portfolio">
+        <h2>Projects & Portfolio</h2>
+        <div class="project-grid">
+            <div class="project-card">
+                <h3>🚀 데이터 분석 및 자동화</h3>
+                <p style="color: var(--text-muted);">다양한 오픈 API와 파이썬을 활용한 데이터 수집 및 시각화 자동화 파이프라인 구축 프로젝트입니다.</p>
+            </div>
+            <div class="project-card">
+                <h3>📚 교육용 콘텐츠 기획</h3>
+                <p style="color: var(--text-muted);">복잡한 개념을 시각적으로 쉽게 이해할 수 있도록 돕는 디지털 교재 및 가이드라인 제작 작업입니다.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="todo">
+        <h2>To-Do List</h2>
+        <div class="todo-input-container">
+            <input type="text" id="todoInput" placeholder="오늘의 할 일을 입력하세요...">
+            <button class="add-btn" id="addTodoBtn">추가</button>
+        </div>
+        <ul class="todo-list" id="todoList">
+            <li class="todo-item">
+                <span>블로그 포트폴리오 업데이트하기</span>
+                <div class="todo-buttons">
+                    <button class="complete-btn" onclick="toggleComplete(this)">✓</button>
+                    <button class="delete-btn" onclick="deleteTodo(this)">✗</button>
+                </div>
+            </li>
+        </ul>
+    </section>
+</div>
+
+<script>
+    // 라이트/블랙 테마 전환 토글 기능
+    const themeToggle = document.getElementById('themeToggle');
+    const html = document.documentElement;
+
+    themeToggle.addEventListener('click', () => {
+        const currentTheme = html.getAttribute('data-theme');
+        if (currentTheme === 'dark') {
+            html.removeAttribute('data-theme');
+            themeToggle.textContent = '블랙 모드 보기';
+        } else {
+            html.setAttribute('data-theme', 'dark');
+            themeToggle.textContent = '라이트 모드 보기';
+        }
+    });
+
+    // 할 일 목록 추가/삭제/완료 기능
+    const todoInput = document.getElementById('todoInput');
+    const addTodoBtn = document.getElementById('addTodoBtn');
+    const todoList = document.getElementById('todoList');
+
+    function createTodoElement(text) {
+        const li = document.createElement('li');
+        li.className = 'todo-item';
+        li.innerHTML = `
+            <span>${text}</span>
+            <div class="todo-buttons">
+                <button class="complete-btn" onclick="toggleComplete(this)">✓</button>
+                <button class="delete-btn" onclick="deleteTodo(this)">✗</button>
+            </div>
+        `;
+        return li;
+    }
+
+    function addTodo() {
+        const text = todoInput.value.trim();
+        if (text !== '') {
+            const todoEl = createTodoElement(text);
+            todoList.appendChild(todoEl);
+            todoInput.value = '';
+        }
+    }
+
+    addTodoBtn.addEventListener('click', addTodo);
+    todoInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') addTodo();
+    });
+
+    function toggleComplete(btn) {
+        const item = btn.closest('.todo-item');
+        item.classList.toggle('completed');
+    }
+
+    function deleteTodo(btn) {
+        const item = btn.closest('.todo-item');
+        item.remove();
+    }
+</script>
+
+</body>
+</html>
